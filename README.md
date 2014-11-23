@@ -9,4 +9,8 @@ Inputs:
 **Ratio of Specific Heats:** gas property of exhaust; > 1 but <= 1.6666666...
 
 **Chamber Pressure (kPa):** internal pressure of the nozzle chamber; equivalent to stagnation pressure of the flow prior to the shock  
-**Amibent Pressure (kPa):** pressure outside the nozzle; the root cause of the normal shock in the nozzle
+**Ambient Pressure (kPa):** pressure outside the nozzle; the root cause of the normal shock in the nozzle
+
+Outputs:
+
+**Area Ratio where normal shock occurs**
