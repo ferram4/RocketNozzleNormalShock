@@ -2,3 +2,5 @@
 /CalculateRocketNozzleNormalShock/bin/Release/*
 /CalculateRocketNozzleNormalShock/obj/Debug/*
 /CalculateRocketNozzleNormalShock/obj/Release/*
+
+*.exe
