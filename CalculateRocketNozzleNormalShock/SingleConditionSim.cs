@@ -28,33 +28,17 @@ using System;
 
 namespace CalculateRocketNozzleNormalShock
 {
-    class Program
+    class SingleConditionSim
     {
-        static void Main()
+        SingleSimDataEntry data;
+        public SingleConditionSim()
         {
-            System.Console.WriteLine("Welcome to Rocket Nozzle Normal Shock Location Calculator");
-            System.Console.WriteLine("");
-            bool cont = true;
-            while (cont)
-            {
-                SingleConditionSim singleSim = new SingleConditionSim();
+            DataEntry entry = new DataEntry();
+            data = entry.GetDataSingleSimEntry();
 
-                cont = Continue();
-            }
-        }
-
-        static bool Continue()
-        {
-            char ch;
-            do
-            {
-                System.Console.Write("Continue? (Y/N) ");
-                int input = System.Console.ReadLine()[0];
-                ch = Convert.ToChar(input);
-                System.Console.WriteLine("");
-            } while (ch != 'y' && ch != 'Y' && ch != 'n' && ch != 'N');
-
-            return (ch == 'y' || ch == 'Y');
+            RocketNozzleNormalShockSim sim = new RocketNozzleNormalShockSim(data.exitAreaRatio, data.gamma);
+            double shockSoln;
+            sim.TryFindNormalShock(out shockSoln, data.chamberPressure, data.backPressure);
         }
     }
 }

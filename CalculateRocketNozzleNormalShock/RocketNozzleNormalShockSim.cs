@@ -43,59 +43,30 @@ namespace CalculateRocketNozzleNormalShock
 
         NormalShockAndCompressiblityRelations shockAndCompressibility;
 
-        public RocketNozzleNormalShockSim()
+        public RocketNozzleNormalShockSim(double exitAreaRatio, double gamma)
         {
-            GetDataEntry();
-
-            if (ErrorConditionsInDataEntered())
-                return;
-
-            IterateToSolution();
-        }
-
-        private void GetDataEntry()
-        {
-
-            System.Console.WriteLine("Beginning new nozzle sim...");
-            System.Console.WriteLine("");
-
-            System.Console.WriteLine("Please enter the following information:");
-            System.Console.WriteLine("");
-            exitAreaRatio = GetDoubleData("Nozzle Area Ratio: ");
-            gamma = GetDoubleData("Exhaust Ratio of Specific Heats (gamma): ");
-            System.Console.WriteLine("");
-            chamberPressure = GetDoubleData("Engine Chamber Pressure (kPa): ") * 1000;
-            backPressure = GetDoubleData("Ambient Pressure (kPa): ") * 1000;
-            System.Console.WriteLine("");
+            this.exitAreaRatio = exitAreaRatio;
+            this.gamma = gamma;
 
             machAreaRelation = new MachAreaRelation(gamma, exitAreaRatio, MACH_INCREMENT);
             shockAndCompressibility = new NormalShockAndCompressiblityRelations(gamma);
-            System.Console.WriteLine("");
-
         }
 
-        private double GetDoubleData(string dataToRequest)
+        public bool TryFindNormalShock(out double areaRatio, double chamberPressure, double backPressure)
         {
-            string tmp;
-            double result;
+            this.chamberPressure = chamberPressure;
+            this.backPressure = backPressure;
 
-            bool correctEntry = true;
-            do
-            {
-                System.Console.Write(dataToRequest);
-                tmp = System.Console.ReadLine();
+            areaRatio = 0;
+            if (ErrorConditionsInDataEntered())
+                return false;
 
-                correctEntry = correctEntry = double.TryParse(tmp, out result);
-                if (!correctEntry)
-                {
-                    System.Console.WriteLine("Error parsing; please input a valid number");
-                    System.Console.WriteLine("");
-                }
-
-            } while (!correctEntry);
-
-            return result;
+            areaRatio = IterateToSolution();
+            return true;
         }
+    
+
+
 
         private bool ErrorConditionsInDataEntered()
         {
@@ -140,7 +111,7 @@ namespace CalculateRocketNozzleNormalShock
         }
 
 
-        private void IterateToSolution()
+        private double IterateToSolution()
         {
             double testRatio, lowerRatio, upperRatio;
             lowerRatio = 1;
@@ -171,6 +142,8 @@ namespace CalculateRocketNozzleNormalShock
             System.Console.WriteLine("Sim completed; iterations: " + counter);
             System.Console.WriteLine("Area Ratio w/ shock: " + testRatio);
             System.Console.WriteLine("");
+
+            return testRatio;
         }
 
         private int TestAreaRatio(double areaRatio, double pressureTolerance)
