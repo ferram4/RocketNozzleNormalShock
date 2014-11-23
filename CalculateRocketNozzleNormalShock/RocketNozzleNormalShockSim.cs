@@ -111,25 +111,34 @@ namespace CalculateRocketNozzleNormalShock
                 System.Console.WriteLine("");
                 return true;
             }
-            if(PressureAtExitAboveBackPressure())
-            {
-                System.Console.WriteLine("Back pressure was greater than ambient; no shock in nozzle");
-                System.Console.WriteLine("");
-                return true;
-
-            }
-            return false;
+            return CheckPressureAtExit();
         }
 
-        private bool PressureAtExitAboveBackPressure()
+        private bool CheckPressureAtExit()
         {
             double exitM = machAreaRelation.EvaluateMachNumberSupersonic(exitAreaRatio);
 
             double exitP = shockAndCompressibility.StagnationPressureRatio(exitM);      //chamber pressure is stagnation pressure
             exitP = chamberPressure / exitP;                                            //use the stagnation pressure relationship to calculate pressure at exit
 
-            return exitP > backPressure;
+            if (exitP > backPressure)
+            {
+                System.Console.WriteLine("Exit pressure was greater than ambient; no shock in nozzle, ending sim");
+                System.Console.WriteLine("");
+                return true;
+            }
+            double exitPWithNormShock = shockAndCompressibility.PressureRatioAcrossShock(exitM);
+            exitPWithNormShock = exitP * exitPWithNormShock;
+
+            if(exitPWithNormShock > backPressure)
+            {
+                System.Console.WriteLine("Back pressure too low to create shock in nozzle; ending sim");
+                System.Console.WriteLine("");
+                return true;
+            }
+            return false;
         }
+
 
         private void IterateToSolution()
         {
