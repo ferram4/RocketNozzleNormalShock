@@ -14,14 +14,13 @@ namespace CalculateRocketNozzleNormalShock
 
         double chamberPressure;
         double backPressure;
-        //machAreaRelation = new MachAreaRelation(1.4, 40, 0.1);
+
+        NormalShockAndCompressiblityRelations shockAndCompressibility;
 
         public RocketNozzleNormalShockSim()
         {
             GetDataEntry();
 
-            if (NoNormalShock())
-                return;
 
         }
 
@@ -40,7 +39,8 @@ namespace CalculateRocketNozzleNormalShock
             backPressure = GetDoubleData("Ambient Pressure (kPa): ") * 1000;
             System.Console.WriteLine("");
 
-            machAreaRelation = new MachAreaRelation(1.4, 40, 0.1);
+            machAreaRelation = new MachAreaRelation(gamma, exitAreaRatio, 0.1);
+            shockAndCompressibility = new NormalShockAndCompressiblityRelations(gamma);
             System.Console.WriteLine("");
 
         }
@@ -66,11 +66,6 @@ namespace CalculateRocketNozzleNormalShock
             } while (!correctEntry);
 
             return result;
-        }
-
-        private bool NoNormalShock()
-        {
-            
         }
     }
 }

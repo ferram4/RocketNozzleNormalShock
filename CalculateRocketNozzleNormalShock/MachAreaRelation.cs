@@ -30,7 +30,7 @@ namespace CalculateRocketNozzleNormalShock
             machFunctionOfAreaSupersonic.Add(1, 0);
             machFunctionOfAreaSubsonic.Add(1, 0);
 
-            while(areaRatio < exitAreaRatio && mach < 1)        //calculate Mach-Area relationship and add to dictionaries
+            while(areaRatio < exitAreaRatio || mach < 1)        //calculate Mach-Area relationship and add to dictionaries
             {
                 mach += MstepSize;
 
