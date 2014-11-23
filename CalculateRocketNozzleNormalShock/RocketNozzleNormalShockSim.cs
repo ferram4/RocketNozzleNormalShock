@@ -19,7 +19,9 @@ namespace CalculateRocketNozzleNormalShock
         public RocketNozzleNormalShockSim()
         {
             GetDataEntry();
-            
+
+            if (NoNormalShock())
+                return;
 
         }
 
@@ -34,14 +36,15 @@ namespace CalculateRocketNozzleNormalShock
             exitAreaRatio = GetDoubleData("Nozzle Area Ratio: ");
             gamma = GetDoubleData("Exhaust Ratio of Specific Heats (gamma): ");
             System.Console.WriteLine("");
-            chamberPressure = GetDoubleData("Engine Chamber Pressure (Pa): ");
-            backPressure = GetDoubleData("Ambient Pressure (Pa): ");
+            chamberPressure = GetDoubleData("Engine Chamber Pressure (kPa): ") * 1000;
+            backPressure = GetDoubleData("Ambient Pressure (kPa): ") * 1000;
             System.Console.WriteLine("");
 
             machAreaRelation = new MachAreaRelation(1.4, 40, 0.1);
             System.Console.WriteLine("");
 
         }
+
         private double GetDoubleData(string dataToRequest)
         {
             string tmp;
@@ -63,6 +66,11 @@ namespace CalculateRocketNozzleNormalShock
             } while (!correctEntry);
 
             return result;
+        }
+
+        private bool NoNormalShock()
+        {
+            
         }
     }
 }

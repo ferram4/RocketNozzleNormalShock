@@ -26,8 +26,8 @@ namespace CalculateRocketNozzleNormalShock
             char ch;
             do
             {
-                System.Console.Write("Continue? (Y/N)");
-                int input = System.Console.Read();
+                System.Console.Write("Continue? (Y/N) ");
+                int input = System.Console.ReadLine()[0];
                 ch = Convert.ToChar(input);
                 System.Console.WriteLine("");
             } while (ch != 'y' && ch != 'Y' && ch != 'n' && ch != 'N');
