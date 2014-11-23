@@ -15,6 +15,9 @@ namespace CalculateRocketNozzleNormalShock
         double chamberPressure;
         double backPressure;
 
+        const double MACH_INCREMENT = 0.001;
+        const double PRES_TOLERANCE = 0.001;    //In kPa
+
         NormalShockAndCompressiblityRelations shockAndCompressibility;
 
         public RocketNozzleNormalShockSim()
@@ -24,35 +27,7 @@ namespace CalculateRocketNozzleNormalShock
             if (ErrorConditionsInDataEntered())
                 return;
 
-            double testRatio, lowerRatio, upperRatio;
-            lowerRatio = 1;
-            upperRatio = exitAreaRatio;
-            testRatio = (upperRatio + lowerRatio) * 0.5;
-
-            int counter = 0;
-
-            int result;
-            do
-            {
-                System.Console.Write("Iteration: " + counter + " AreaRatioTest: " + testRatio);
-                counter++;
-                result = TestAreaRatio(testRatio, 1);
-                if(result > 0)
-                {
-                    lowerRatio = testRatio;
-                }
-                else if(result < 0)
-                {
-                    upperRatio = testRatio;
-                }
-
-                testRatio = (upperRatio + lowerRatio) * 0.5;
-
-            } while (result != 0);
-            System.Console.WriteLine("");
-            System.Console.WriteLine("Sim completed; iterations: " + counter);
-            System.Console.WriteLine("Area Ratio w/ shock: " + testRatio);
-            System.Console.WriteLine("");
+            IterateToSolution();
         }
 
         private void GetDataEntry()
@@ -70,7 +45,7 @@ namespace CalculateRocketNozzleNormalShock
             backPressure = GetDoubleData("Ambient Pressure (kPa): ") * 1000;
             System.Console.WriteLine("");
 
-            machAreaRelation = new MachAreaRelation(gamma, exitAreaRatio, 0.01);
+            machAreaRelation = new MachAreaRelation(gamma, exitAreaRatio, MACH_INCREMENT);
             shockAndCompressibility = new NormalShockAndCompressiblityRelations(gamma);
             System.Console.WriteLine("");
 
@@ -131,6 +106,39 @@ namespace CalculateRocketNozzleNormalShock
             exitP = chamberPressure / exitP;                                            //use the stagnation pressure relationship to calculate pressure at exit
 
             return exitP > backPressure;
+        }
+
+        private void IterateToSolution()
+        {
+            double testRatio, lowerRatio, upperRatio;
+            lowerRatio = 1;
+            upperRatio = exitAreaRatio;
+            testRatio = (upperRatio + lowerRatio) * 0.5;
+
+            int counter = 0;
+
+            int result;
+            do
+            {
+                System.Console.Write("Iter: " + counter + " AreaRatio: " + testRatio);
+                counter++;
+                result = TestAreaRatio(testRatio, PRES_TOLERANCE);
+                if (result > 0)
+                {
+                    lowerRatio = testRatio;
+                }
+                else if (result < 0)
+                {
+                    upperRatio = testRatio;
+                }
+
+                testRatio = (upperRatio + lowerRatio) * 0.5;
+
+            } while (result != 0);
+            System.Console.WriteLine("");
+            System.Console.WriteLine("Sim completed; iterations: " + counter);
+            System.Console.WriteLine("Area Ratio w/ shock: " + testRatio);
+            System.Console.WriteLine("");
         }
 
         private int TestAreaRatio(double areaRatio, double pressureTolerance)
