@@ -24,6 +24,35 @@ namespace CalculateRocketNozzleNormalShock
             if (ErrorConditionsInDataEntered())
                 return;
 
+            double testRatio, lowerRatio, upperRatio;
+            lowerRatio = 1;
+            upperRatio = exitAreaRatio;
+            testRatio = (upperRatio + lowerRatio) * 0.5;
+
+            int counter = 0;
+
+            int result;
+            do
+            {
+                System.Console.Write("Iteration: " + counter + " AreaRatioTest: " + testRatio);
+                counter++;
+                result = TestAreaRatio(testRatio, 1);
+                if(result > 0)
+                {
+                    lowerRatio = testRatio;
+                }
+                else if(result < 0)
+                {
+                    upperRatio = testRatio;
+                }
+
+                testRatio = (upperRatio + lowerRatio) * 0.5;
+
+            } while (result != 0);
+            System.Console.WriteLine("");
+            System.Console.WriteLine("Sim completed; iterations: " + counter);
+            System.Console.WriteLine("Area Ratio w/ shock: " + testRatio);
+            System.Console.WriteLine("");
         }
 
         private void GetDataEntry()
@@ -41,7 +70,7 @@ namespace CalculateRocketNozzleNormalShock
             backPressure = GetDoubleData("Ambient Pressure (kPa): ") * 1000;
             System.Console.WriteLine("");
 
-            machAreaRelation = new MachAreaRelation(gamma, exitAreaRatio, 0.1);
+            machAreaRelation = new MachAreaRelation(gamma, exitAreaRatio, 0.01);
             shockAndCompressibility = new NormalShockAndCompressiblityRelations(gamma);
             System.Console.WriteLine("");
 
@@ -102,6 +131,38 @@ namespace CalculateRocketNozzleNormalShock
             exitP = chamberPressure / exitP;                                            //use the stagnation pressure relationship to calculate pressure at exit
 
             return exitP > backPressure;
+        }
+
+        private int TestAreaRatio(double areaRatio, double pressureTolerance)
+        {
+            //calculate conditions upsteam of the shock if it were to exist at this location
+            double upstreamShockM = machAreaRelation.EvaluateMachNumberSupersonic(areaRatio);
+            double upstreamShockP = chamberPressure / shockAndCompressibility.StagnationPressureRatio(upstreamShockM);
+
+            //Get conditions downstream of the shock
+            double downstreamShockM = shockAndCompressibility.MachNumberDownstreamOfShock(upstreamShockM);
+            double downstreamShockP = shockAndCompressibility.PressureRatioAcrossShock(upstreamShockM) * upstreamShockP;
+
+            double downstreamShockEffectiveAreaRatio = machAreaRelation.EvaluateAreaRatio(downstreamShockM);        //Calculate the areaRatio that would create this Mach number;
+            double effectiveActualThroatRatio = areaRatio / downstreamShockEffectiveAreaRatio;                  //This is a ratio between the throat of the true nozzle, and the effective nozzle this is now looking at
+
+            double effectiveExitRatio = exitAreaRatio / effectiveActualThroatRatio;
+            double exitM = machAreaRelation.EvaluateMachNumberSubsonic(effectiveExitRatio);         //using the effective exit area ratio, get the Mach number at the exit
+
+            double pressureRatioDownstreamShockToExit = shockAndCompressibility.StagnationPressureRatio(downstreamShockM) / shockAndCompressibility.StagnationPressureRatio(exitM);
+            double pressureAtExit = downstreamShockP * pressureRatioDownstreamShockToExit;
+
+            double diffExitPresBackPres = pressureAtExit - backPressure;
+            System.Console.WriteLine(" Pressure Diff: " + diffExitPresBackPres);
+
+            if (Math.Abs(diffExitPresBackPres) < pressureTolerance)
+                return 0;
+            else if (diffExitPresBackPres < 0)
+            {
+                return -1;
+            }
+            else
+                return 1;
         }
     }
 }
