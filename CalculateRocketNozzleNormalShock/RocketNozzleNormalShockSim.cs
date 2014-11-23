@@ -21,6 +21,8 @@ namespace CalculateRocketNozzleNormalShock
         {
             GetDataEntry();
 
+            if (ErrorConditionsInDataEntered())
+                return;
 
         }
 
@@ -66,6 +68,40 @@ namespace CalculateRocketNozzleNormalShock
             } while (!correctEntry);
 
             return result;
+        }
+
+        private bool ErrorConditionsInDataEntered()
+        {
+            if(backPressure > chamberPressure)
+            {
+                System.Console.WriteLine("Error: back pressure was higher than chamber pressure; ending sim");
+                System.Console.WriteLine("");
+                return true;
+            }
+            if(backPressure < 0)
+            {
+                System.Console.WriteLine("Error: back pressure was below vacuum; ending sim");
+                System.Console.WriteLine("");
+                return true;
+            }
+            if(PressureAtExitAboveBackPressure())
+            {
+                System.Console.WriteLine("Back pressure was greater than ambient; no shock in nozzle");
+                System.Console.WriteLine("");
+                return true;
+
+            }
+            return false;
+        }
+
+        private bool PressureAtExitAboveBackPressure()
+        {
+            double exitM = machAreaRelation.EvaluateMachNumberSupersonic(exitAreaRatio);
+
+            double exitP = shockAndCompressibility.StagnationPressureRatio(exitM);      //chamber pressure is stagnation pressure
+            exitP = chamberPressure / exitP;                                            //use the stagnation pressure relationship to calculate pressure at exit
+
+            return exitP > backPressure;
         }
     }
 }
