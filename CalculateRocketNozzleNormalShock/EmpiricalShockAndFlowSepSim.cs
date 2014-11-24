@@ -28,6 +28,11 @@ namespace CalculateRocketNozzleNormalShock
         private EmpiricalModel currentModel = EmpiricalModel.schilling;
         private Func<double, double, double, double> pSepFunc;
 
+        public string CurrentModel
+        {
+            get { return currentModel.ToString(); }
+        }
+
         public void SetCurrentModel()
         {
             currentModel = (EmpiricalModel)Enum.Parse(typeof(EmpiricalModel), SelectModel());

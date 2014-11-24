@@ -40,14 +40,17 @@ namespace CalculateRocketNozzleNormalShock
             data = entry.GetDataSweepSimEntry();
 
             bool useEmpirical = ShockOrEmpiricalSim();
+            string header;
             if (useEmpirical)
             {
                 empiricalSim = new EmpiricalShockAndFlowSepSim(data.exitAreaRatio, data.gamma);
                 empiricalSim.SetCurrentModel();
+                header = empiricalSim.CurrentModel;
             }
             else
             {
                 shockSim = new RocketNozzleNormalShockSim(data.exitAreaRatio, data.gamma);
+                header = "shock";
             }
 
             string[,] dataArray = IterateConditions(useEmpirical);
@@ -57,7 +60,9 @@ namespace CalculateRocketNozzleNormalShock
             System.Console.WriteLine("");
             DataWriting write = new DataWriting();
 
-            write.WriteToFile(fileName, dataArray);
+
+
+            write.WriteToFile(fileName, dataArray, header);
         }
 
         private string[,] IterateConditions(bool useEmpirical)

@@ -32,7 +32,7 @@ namespace CalculateRocketNozzleNormalShock
 {
     class DataWriting
     {
-        public bool WriteToFile(string fileNameAndPath, string[,] dataToWrite)
+        public bool WriteToFile(string fileNameAndPath, string[,] dataToWrite, string header)
         {
             try
             {
@@ -43,6 +43,7 @@ namespace CalculateRocketNozzleNormalShock
                 int numColumns = dataToWrite.GetUpperBound(0) + 1;
                 int numRows = dataToWrite.GetUpperBound(1) + 1;
 
+                sw.Write("Model used: " + header + "\r\n");
                 //Dump data to file
                 for (int i = 0; i < numRows; i++)
                 {
