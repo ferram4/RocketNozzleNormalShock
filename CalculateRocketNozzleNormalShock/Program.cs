@@ -37,10 +37,32 @@ namespace CalculateRocketNozzleNormalShock
             bool cont = true;
             while (cont)
             {
-                SingleConditionSim singleSim = new SingleConditionSim();
+                if (SingleOrVariableSim())
+                {
+                    VariableSweepSim varSim = new VariableSweepSim();
+                }
+                else
+                {
+                    SingleConditionSim singleSim = new SingleConditionSim();
+                }
 
                 cont = Continue();
             }
+        }
+
+        //Returns true form VariableSim
+        static bool SingleOrVariableSim()
+        {
+            string input = "";
+            do
+            {
+                System.Console.WriteLine("Select Single Condition Sim (\"SCS\") or Variable Condition Sim (\"VCS\"):");
+                input = System.Console.ReadLine();
+                input.ToLowerInvariant();
+                System.Console.WriteLine("");
+            } while (!(input == "scs" || input == "vcs"));
+
+            return input == "vcs";
         }
 
         static bool Continue()

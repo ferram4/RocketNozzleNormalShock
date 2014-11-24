@@ -40,6 +40,7 @@ namespace CalculateRocketNozzleNormalShock
 
         const double MACH_INCREMENT = 0.001;
         const double PRES_TOLERANCE = 0.001;    //In kPa
+        const int MAX_ITERATIONS = 1000;
 
         NormalShockAndCompressiblityRelations shockAndCompressibility;
 
@@ -82,6 +83,7 @@ namespace CalculateRocketNozzleNormalShock
                 System.Console.WriteLine("");
                 return true;
             }
+
             return CheckPressureAtExit();
         }
 
@@ -101,7 +103,7 @@ namespace CalculateRocketNozzleNormalShock
             double exitPWithNormShock = shockAndCompressibility.PressureRatioAcrossShock(exitM);
             exitPWithNormShock = exitP * exitPWithNormShock;
 
-            if(exitPWithNormShock > backPressure)
+            if(exitPWithNormShock >= backPressure)
             {
                 System.Console.WriteLine("Back pressure too low to create shock in nozzle; ending sim");
                 System.Console.WriteLine("");
@@ -137,7 +139,8 @@ namespace CalculateRocketNozzleNormalShock
 
                 testRatio = (upperRatio + lowerRatio) * 0.5;
 
-            } while (result != 0);
+            } while (result != 0 && counter <= MAX_ITERATIONS);
+
             System.Console.WriteLine("");
             System.Console.WriteLine("Sim completed; iterations: " + counter);
             System.Console.WriteLine("Area Ratio w/ shock: " + testRatio);

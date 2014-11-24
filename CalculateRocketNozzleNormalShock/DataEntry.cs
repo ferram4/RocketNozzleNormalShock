@@ -120,6 +120,7 @@ namespace CalculateRocketNozzleNormalShock
             return result;
         }
     }
+    
 
     struct SingleSimDataEntry
     {
