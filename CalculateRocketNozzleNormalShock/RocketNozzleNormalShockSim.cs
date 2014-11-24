@@ -29,29 +29,9 @@ using System.Collections.Generic;
 
 namespace CalculateRocketNozzleNormalShock
 {
-    class RocketNozzleNormalShockSim
+    class RocketNozzleNormalShockSim : NozzleSim
     {
-        MachAreaRelation machAreaRelation;
-        double exitAreaRatio;
-        double gamma;
-
-        double chamberPressure;
-        double backPressure;
-
-        const double MACH_INCREMENT = 0.001;
-        const double PRES_TOLERANCE = 0.001;    //In kPa
-        const int MAX_ITERATIONS = 1000;
-
-        NormalShockAndCompressiblityRelations shockAndCompressibility;
-
-        public RocketNozzleNormalShockSim(double exitAreaRatio, double gamma)
-        {
-            this.exitAreaRatio = exitAreaRatio;
-            this.gamma = gamma;
-
-            machAreaRelation = new MachAreaRelation(gamma, exitAreaRatio, MACH_INCREMENT);
-            shockAndCompressibility = new NormalShockAndCompressiblityRelations(gamma);
-        }
+        public RocketNozzleNormalShockSim(double exitAreaRatio, double gamma) : base(exitAreaRatio, gamma) { }
 
         public bool TryFindNormalShock(out double areaRatio, double chamberPressure, double backPressure)
         {
@@ -66,9 +46,6 @@ namespace CalculateRocketNozzleNormalShock
             return true;
         }
     
-
-
-
         private bool ErrorConditionsInDataEntered()
         {
             if(backPressure > chamberPressure)

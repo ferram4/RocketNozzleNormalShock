@@ -44,8 +44,10 @@
     <Compile Include="Curve.cs" />
     <Compile Include="DataEntry.cs" />
     <Compile Include="DataWriting.cs" />
+    <Compile Include="EmpiricalShockAndFlowSepSim.cs" />
     <Compile Include="MachAreaRelation.cs" />
     <Compile Include="NormalShockAndCompressiblityRelations.cs" />
+    <Compile Include="NozzleSim.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RocketNozzleNormalShockSim.cs" />

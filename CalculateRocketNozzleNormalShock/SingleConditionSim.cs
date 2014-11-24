@@ -36,9 +36,35 @@ namespace CalculateRocketNozzleNormalShock
             DataEntry entry = new DataEntry();
             data = entry.GetDataSingleSimEntry();
 
-            RocketNozzleNormalShockSim sim = new RocketNozzleNormalShockSim(data.exitAreaRatio, data.gamma);
-            double shockSoln;
-            sim.TryFindNormalShock(out shockSoln, data.chamberPressure, data.backPressure);
+            if (ShockOrEmpiricalSim())
+            {
+                EmpiricalShockAndFlowSepSim sim = new EmpiricalShockAndFlowSepSim(data.exitAreaRatio, data.gamma);
+                double shockSoln;
+                sim.SetCurrentModel();
+                sim.TryCalculateEmpiricalModel(out shockSoln, data.chamberPressure, data.backPressure);
+
+            }
+            else
+            {
+                RocketNozzleNormalShockSim sim = new RocketNozzleNormalShockSim(data.exitAreaRatio, data.gamma);
+                double shockSoln;
+                sim.TryFindNormalShock(out shockSoln, data.chamberPressure, data.backPressure);
+            }
+        }
+
+        //Returns true for Empirical
+        private bool ShockOrEmpiricalSim()
+        {
+            string input = "";
+            do
+            {
+                System.Console.WriteLine("Select \"Shock\" or \"Empirical\" simulation:");
+                input = System.Console.ReadLine();
+                input.ToLowerInvariant();
+                System.Console.WriteLine("");
+            } while (!(input == "shock" || input == "empirical"));
+
+            return input == "empirical";
         }
     }
 }
