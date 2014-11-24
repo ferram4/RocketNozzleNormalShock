@@ -191,7 +191,7 @@ namespace CalculateRocketNozzleNormalShock
 
         private double KaltBadal(double backPressure, double chamberPressure, double machNumber)
         {
-            double pSep = Math.Pow(chamberPressure / backPressure, -0.2) * 2 / 3 * backPressure;
+            double pSep = Math.Pow(chamberPressure / backPressure, 0.2) * 2 / 3 * backPressure;
             return pSep;
         }
 
@@ -203,7 +203,7 @@ namespace CalculateRocketNozzleNormalShock
 
         private double Summerfield(double backPressure, double chamberPressure, double machNumber)
         {
-            return 0.375;
+            return 0.375 * backPressure;
         }
 
         private double Stark(double backPressure, double chamberPressure, double machNumber)
