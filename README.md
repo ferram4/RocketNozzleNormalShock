@@ -26,7 +26,7 @@ Simulates the properties of a nozzle at a single chamber pressure and ambient pr
 
 Sweeps across multiple values of chamber pressure and ambient pressure, printing to a file.  Good for comprehensive sweeps of nozzle data
 
-####Inputs:
+####Inputs:  
 
 **Nozzle Area Ratio:** ratio of exit area of nozzle to throat area  
 **Ratio of Specific Heats:** gas property of exhaust; > 1 but <= 1.6666666...
@@ -39,7 +39,7 @@ Sweeps across multiple values of chamber pressure and ambient pressure, printing
 **Ambient Pressure Min (kPa):** min pressure outside the nozzle; this will vary with altitude  
 **Ambient Pressure Steps:** number of ambient pressure test conditions; must be > 2
 
-####Outputs:
+####Outputs:  
 
 **Text file: ** contains area ratio of shock as a function of chamber pressure and ambient pressure  
 Ambinet pressure is listed on the left-most column; chamber pressure is listed on the top-most row
