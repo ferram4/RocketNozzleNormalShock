@@ -54,16 +54,16 @@ namespace CalculateRocketNozzleNormalShock
             double chamberIncPerStep = (data.chamberPressureMax - data.chamberPressureMin) / (double)data.chamberPressureSteps;
             double backIncPerStep = (data.backPressureMax - data.backPressureMin) / (double)data.backPressureSteps;
 
-            string[,] dataToWrite = new string[data.chamberPressureSteps + 1, data.backPressureSteps + 1];
+            string[,] dataToWrite = new string[data.chamberPressureSteps + 2, data.backPressureSteps + 2];
 
             dataToWrite[0, 0] = "";
             double shockSoln;
-            for(int i = 0; i < data.backPressureSteps; i++)
+            for(int i = 0; i <= data.backPressureSteps; i++)
             {
                 double backPressure = data.backPressureMin + i * backIncPerStep;
                 dataToWrite[0, i + 1] = backPressure.ToString();
 
-                for(int j = 0; j < data.chamberPressureSteps; j++)
+                for(int j = 0; j <= data.chamberPressureSteps; j++)
                 {
 
                     double chamberPressure = data.chamberPressureMin + j * chamberIncPerStep;
