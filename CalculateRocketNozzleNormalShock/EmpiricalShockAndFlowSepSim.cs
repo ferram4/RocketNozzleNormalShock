@@ -94,6 +94,9 @@ namespace CalculateRocketNozzleNormalShock
             this.backPressure = backPressure;
 
             areaRatio = 0;
+            if (ErrorConditionsInDataEntered())
+                return false;
+
 
             areaRatio = FindSolution();
             return true;

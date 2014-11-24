@@ -31,15 +31,26 @@ namespace CalculateRocketNozzleNormalShock
     class VariableSweepSim
     {
         SweepSimDataEntry data;
-        RocketNozzleNormalShockSim sim;
+        RocketNozzleNormalShockSim shockSim;
+        EmpiricalShockAndFlowSepSim empiricalSim;
 
         public VariableSweepSim()
         {
             DataEntry entry = new DataEntry();
             data = entry.GetDataSweepSimEntry();
 
-            sim = new RocketNozzleNormalShockSim(data.exitAreaRatio, data.gamma);
-            string[,] dataArray = IterateConditions();
+            bool useEmpirical = ShockOrEmpiricalSim();
+            if (useEmpirical)
+            {
+                empiricalSim = new EmpiricalShockAndFlowSepSim(data.exitAreaRatio, data.gamma);
+                empiricalSim.SetCurrentModel();
+            }
+            else
+            {
+                shockSim = new RocketNozzleNormalShockSim(data.exitAreaRatio, data.gamma);
+            }
+
+            string[,] dataArray = IterateConditions(useEmpirical);
 
             System.Console.WriteLine("Choose FileName for Data, including extension: ");
             string fileName = Console.ReadLine();
@@ -49,7 +60,7 @@ namespace CalculateRocketNozzleNormalShock
             write.WriteToFile(fileName, dataArray);
         }
 
-        private string[,] IterateConditions()
+        private string[,] IterateConditions(bool useEmpirical)
         {
             double chamberIncPerStep = (data.chamberPressureMax - data.chamberPressureMin) / (double)data.chamberPressureSteps;
             double backIncPerStep = (data.backPressureMax - data.backPressureMin) / (double)data.backPressureSteps;
@@ -57,7 +68,7 @@ namespace CalculateRocketNozzleNormalShock
             string[,] dataToWrite = new string[data.chamberPressureSteps + 2, data.backPressureSteps + 2];
 
             dataToWrite[0, 0] = "";
-            double shockSoln;
+            double soln;
             for(int i = 0; i <= data.backPressureSteps; i++)
             {
                 double backPressure = data.backPressureMin + i * backIncPerStep;
@@ -68,17 +79,43 @@ namespace CalculateRocketNozzleNormalShock
 
                     double chamberPressure = data.chamberPressureMin + j * chamberIncPerStep;
                     dataToWrite[j + 1, 0] = chamberPressure.ToString();
-                    if (sim.TryFindNormalShock(out shockSoln, chamberPressure, backPressure))
+                    if (useEmpirical)
                     {
-                        dataToWrite[j + 1, i + 1] = shockSoln.ToString();
+                        if (empiricalSim.TryCalculateEmpiricalModel(out soln, chamberPressure, backPressure))
+                        {
+                            dataToWrite[j + 1, i + 1] = soln.ToString();
+                        }
+                        else
+                            dataToWrite[j + 1, i + 1] = "NULL";
+
                     }
                     else
-                        dataToWrite[j + 1, i + 1] = "NULL";
+                    {
+                        if (shockSim.TryFindNormalShock(out soln, chamberPressure, backPressure))
+                        {
+                            dataToWrite[j + 1, i + 1] = soln.ToString();
+                        }
+                        else
+                            dataToWrite[j + 1, i + 1] = "NULL";
+                    }
                 }
             }
 
             return dataToWrite;
         }
 
+        private bool ShockOrEmpiricalSim()
+        {
+            string input = "";
+            do
+            {
+                System.Console.WriteLine("Select \"Shock\" or \"Empirical\" simulation:");
+                input = System.Console.ReadLine();
+                input.ToLowerInvariant();
+                System.Console.WriteLine("");
+            } while (!(input == "shock" || input == "empirical"));
+
+            return input == "empirical";
+        }
     }
 }
